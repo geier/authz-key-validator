@@ -11,7 +11,7 @@ type Scope struct {
 	Resource string
 }
 
-// KeyData represents an API key with its metadata
+// KeyData represents an API key with metadata
 type KeyData struct {
 	ID        string
 	Value     string
@@ -22,14 +22,14 @@ type KeyData struct {
 	ExpiresAt *time.Time
 }
 
-// Cache provides a thread-safe in-memory cache for KeyData
+// Cache is a thread-safe in-memory cache for KeyData
 type Cache struct {
 	mu       sync.RWMutex
-	byID    map[string]*KeyData
+	byID     map[string]*KeyData
 	byValue  map[string]*KeyData
 }
 
-// NewCache creates a new cache instance
+// NewCache creates a new cache instance.
 func NewCache() *Cache {
 	return &Cache{
 		byID:    make(map[string]*KeyData),
@@ -37,26 +37,56 @@ func NewCache() *Cache {
 	}
 }
 
-// GetByID retrieves a KeyData by ID
+// GetByID retrieves a KeyData by ID, returning a copy
 func (c *Cache) GetByID(id string) *KeyData {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	return c.byID[id]
+	if data, exists := c.byID[id]; exists {
+		return &KeyData{
+			ID:        data.ID,
+			Value:     data.Value,
+			Scopes:    append([]Scope{}, data.Scopes...),
+			Owner:     data.Owner,
+			Namespace: data.Namespace,
+			Enabled:   data.Enabled,
+			ExpiresAt: data.ExpiresAt,
+		}
+	}
+	return nil
 }
 
-// GetByValue retrieves a KeyData by its key value
+// GetByValue retrieves a KeyData by value, returning a copy
 func (c *Cache) GetByValue(value string) *KeyData {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	return c.byValue[value]
+	if data, exists := c.byValue[value]; exists {
+		return &KeyData{
+			ID:        data.ID,
+			Value:     data.Value,
+			Scopes:    append([]Scope{}, data.Scopes...),
+			Owner:     data.Owner,
+			Namespace: data.Namespace,
+			Enabled:   data.Enabled,
+			ExpiresAt: data.ExpiresAt,
+		}
+	}
+	return nil
 }
 
 // Upsert inserts or updates a KeyData in the cache
 func (c *Cache) Upsert(data *KeyData) {
+	if data == nil {
+		return
+	}
 	c.mu.Lock()
 	defer c.mu.Unlock()
+
+	// Handle value collision: remove old entry if same value exists with different ID
+	if existing, exists := c.byValue[data.Value]; exists && existing.ID != data.ID {
+		delete(c.byID, existing.ID)
+	}
 	
-	// Check if we need to remove old value
+	// Remove old value if updating
 	if existing, exists := c.byID[data.ID]; exists {
 		delete(c.byValue, existing.Value)
 	}
@@ -71,8 +101,8 @@ func (c *Cache) Delete(id string) {
 	defer c.mu.Unlock()
 	if data, exists := c.byID[id]; exists {
 		delete(c.byValue, data.Value)
+		delete(c.byID, id)
 	}
-	delete(c.byID, id)
 }
 
 // Len returns the number of items in the cache

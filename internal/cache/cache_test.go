@@ -67,6 +67,14 @@ func TestCacheConcurrentAccess(t *testing.T) {
 	}
 }
 
+func TestCacheNilInput(t *testing.T) {
+	cache := NewCache()
+	cache.Upsert(nil) // should not panic
+	if cache.Len() != 0 {
+		t.Errorf("expected empty cache, got %d items", cache.Len())
+	}
+}
+
 func BenchmarkCacheLookup(b *testing.B) {
 	cache := NewCache()
 	cache.Upsert(&KeyData{ID: "bench-id", Value: "bench-value"})
