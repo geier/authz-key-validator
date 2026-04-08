@@ -66,8 +66,25 @@ internal/crdwatcher/ - AIGatewayKey CRD watcher
 ## Development
 
 ```bash
-make test
-make build
+make test    # Run tests
+make build   # Build binary
+make run     # Run locally
 ```
+
+## Code Style
+
+- `gofmt`, `goimports` for formatting
+- Doc comments for exported functions
+- Structured logging with `log/slog`
+
+## Project Structure
+
+```
+cmd/server/        # Entry point
+internal/
+├── auth/         # Authorization logic
+├── cache/        # Key cache
+├── config/        # Configuration
+└── crdwatcher/   # CRD watcher
 
 See `docs/requirements.md` for full requirements.

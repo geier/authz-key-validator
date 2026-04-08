@@ -56,6 +56,44 @@ Workers process a single issue, then exit.
 │  1. ASSIGN WORK                                     │
 │     gh issue list --search "no:assignee label:ready no:blocked-by" │
 │     Spawn one worker per issue                       │
+├─────────────────────────────────────────────────────────┤
+│  2. MONITOR                                         │
+│     - Check worker outputs                           │
+│     - Handle escalations (needs-supervisor label)    │
+│     - Verify PR quality                              │
+├─────────────────────────────────────────────────────────┤
+│  3. REVIEW PRs                                      │
+│     Phase 1: Hygiene (base branch, files changed)   │
+│     Phase 2: Deep review (spawn review workers)     │
+│     Phase 3: Copilot review cycle                   │
+├─────────────────────────────────────────────────────────┤
+│  4. CLEANUP                                         │
+│     - Merge PRs, update dependencies               │
+│     - Remove resolved blockers                       │
+└─────────────────────────────────────────────────────────┘
+```
+
+### PR Review Cycle
+
+**Phase 1: Hygiene Check**
+- Verify base branch (should be main)
+- Check files changed (should only touch relevant files)
+- Detect cross-PR conflicts
+
+**Phase 2: Deep Review**
+- Spawn review workers to check:
+  - Issue requirements met
+  - Code follows AGENTS.md
+  - Edge cases handled
+
+**Phase 3: Copilot Review**
+```bash
+gh copilot-review <pr-number>
+```
+┌─────────────────────────────────────────────────────────┐
+│  1. ASSIGN WORK                                     │
+│     gh issue list --search "no:assignee label:ready no:blocked-by" │
+│     Spawn one worker per issue                       │
 ├────────────────────────────────────────────────────────┤
 │  2. MONITOR                                         │
 │     - Check worker outputs                           │
