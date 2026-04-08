@@ -66,3 +66,13 @@ func TestCacheConcurrentAccess(t *testing.T) {
 		t.Errorf("expected cache length 1, got %d", cache.Len())
 	}
 }
+
+func BenchmarkCacheLookup(b *testing.B) {
+	cache := NewCache()
+	cache.Upsert(&KeyData{ID: "bench-id", Value: "bench-value"})
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		cache.GetByID("bench-id")
+	}
+}
