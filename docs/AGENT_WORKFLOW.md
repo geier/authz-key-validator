@@ -136,6 +136,19 @@ Workers escalate by:
 2. Commenting with specific questions
 3. Unassigning themselves
 
+## Required GitHub CLI Extensions
+
+Install the Copilot review extension:
+
+```bash
+gh extension install ChrisCarini/gh-copilot-review
+```
+
+Usage:
+```bash
+gh copilot-review <pr-number>
+```
+
 ## Quick Reference
 
 ```bash
@@ -148,7 +161,7 @@ gh issue edit <N> --add-assignee @me --add-label in-progress
 # Check escalations
 gh issue list --label needs-supervisor
 
-# Request Copilot review
+# Request Copilot review (requires gh-copilot-review extension)
 gh copilot-review <pr-number>
 ```
 
