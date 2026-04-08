@@ -22,6 +22,22 @@ go test ./... -race
 ## Architecture
 
 ```
+┌─────────────────────────────────────────────────────────────────┐
+│                        Istio Gateway                        │
+│                                                             │
+│   Client ──► Envoy ──► ext_authz ──► Auth Service ──► Backend
+│                             │                               │
+│                             ▼                               │
+│                     ┌───────────────┐                       │
+│                     │   Key Cache   │◄── AIGatewayKey CRD   │
+│                     │  (in-memory)  │                       │
+│                     └───────────────┘                       │
+└─────────────────────────────────────────────────────────────────┘
+
+Flow: Request → Istio Gateway → ext_authz call → Auth Service → Lookup key in cache
+                                                            ↓
+                                          Allow/Deny based on key validity & scopes
+```
 Client → Istio Gateway → ext_authz → [Auth Service] → Upstream
                                  ↓
                           Key Cache (in-memory)
