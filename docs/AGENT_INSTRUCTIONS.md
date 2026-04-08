@@ -95,3 +95,13 @@ make run
 ```
 
 For detailed requirements, see `docs/requirements.md`.
+
+---
+
+## Development Notes
+
+The `gh` CLI is installed at `~/.local/bin/gh`. Add to PATH if needed:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
