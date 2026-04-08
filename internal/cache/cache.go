@@ -51,10 +51,16 @@ func (c *Cache) GetByValue(value string) *KeyData {
 	return c.byValue[value]
 }
 
-// Upsert inserts or updates the KeyData in the cache
+// Upsert inserts or updates a KeyData in the cache
 func (c *Cache) Upsert(data *KeyData) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+	
+	// Check if we need to remove old value
+	if existing, exists := c.byID[data.ID]; exists {
+		delete(c.byValue, existing.Value)
+	}
+	
 	c.byID[data.ID] = data
 	c.byValue[data.Value] = data
 }

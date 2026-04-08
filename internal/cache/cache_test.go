@@ -43,7 +43,7 @@ func TestCacheDelete(t *testing.T) {
 
 	cache.Delete("test-id")
 	if cache.Len() != 0 {
-		t.Errorf("expected length 0, got %d", cache.Len())
+		t.Errorf("expected empty cache, got %d items", cache.Len())
 	}
 }
 
@@ -63,39 +63,6 @@ func TestCacheConcurrentAccess(t *testing.T) {
 	}
 
 	if cache.Len() != 1 {
-		t.Errorf("expected length 1, got %d", cache.Len())
-	}
-}
-	
-	cache.Upsert(data)
-	
-	result := cache.GetByID("test-id")
-	if result == nil {
-		t.Fatal("expected to find cached item")
-	}
-	
-	if result.ID != "test-id" {
-		t.Errorf("expected ID test-id, got %s", result.ID)
-	}
-	
-	result2 := cache.GetByValue("test-value")
-	if result2 == nil {
-		t.Error("expected to find item by value")
-	}
-}
-
-func TestCacheDelete(t *testing.T) {
-	cache := NewCache()
-
-	data := &KeyData{ID: "test-id", Value: "test-value"}
-	cache.Upsert(data)
-	
-	if cache.Len() != 1 {
 		t.Errorf("expected cache length 1, got %d", cache.Len())
-	}
-	
-	cache.Delete("test-id")
-	if cache.Len() != 0 {
-		t.Errorf("expected empty cache, got %d items", cache.Len())
 	}
 }
