@@ -47,6 +47,35 @@ func TestCacheDelete(t *testing.T) {
 	}
 }
 
+func TestCacheUpdateValue(t *testing.T) {
+	cache := NewCache()
+
+	// Insert initial value
+	cache.Upsert(&KeyData{ID: "test-id", Value: "value1"})
+
+	// Update with new value
+	cache.Upsert(&KeyData{ID: "test-id", Value: "value2"})
+
+	// Old value should not be found
+	if item := cache.GetByValue("value1"); item != nil {
+		t.Error("expected old value to be removed")
+	}
+
+	// New value should be found
+	item := cache.GetByValue("value2")
+	if item == nil {
+		t.Fatal("expected to find item by new value")
+	}
+	if item.ID != "test-id" {
+		t.Errorf("expected ID test-id, got %s", item.ID)
+	}
+
+	// Old value lookup should fail
+	if cache.GetByValue("value1") != nil {
+		t.Error("expected old value to be removed from index")
+	}
+}
+
 func TestCacheConcurrentAccess(t *testing.T) {
 	cache := NewCache()
 	done := make(chan bool)
